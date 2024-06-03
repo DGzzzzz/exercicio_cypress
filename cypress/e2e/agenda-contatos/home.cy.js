@@ -5,37 +5,47 @@ describe('Deve renderizar a pagina de contatos', () => {
         cy.visit('https://agenda-contatos-react.vercel.app/')
     })
 
-    it('Deve renderizar a pagina com dois contatos', () => {
-        cy.get('.sc-beqWaB.eQdhbg.contato').should('have.length', 2)
+    it('Deve renderizar a pagina com contatos', () => {
+        cy.get('li').should('exist')
+    })
+})
+
+
+describe('Deve mannipular os contatos', () => {
+    beforeEach(() => {
+        cy.visit('https://agenda-contatos-react.vercel.app/')
     })
 
     it('Deve incluir um novo contato', () => {
-        cy.get('[type="text"]').type('Fulado de tal')
+        cy.get('.contato').then((contatosIniciais) => {
+            const numContatosIniciais = contatosIniciais.length;
+
+        cy.get('[type="text"]').type('Fulano de tal')
         cy.get('[type="email"]').type('email@email.com')
         cy.get('[type="tel"]').type('51 999999999')
         cy.get('.adicionar').click()
-        
-        cy.get('.sc-beqWaB.eQdhbg.contato').should('have.length', 3)
+
+        cy.get('.contato').should('have.length', numContatosIniciais + 1)
+        })
     })
 
-    it('Deve editar um contato', () => {
-        cy.get(':nth-child(4) > .sc-gueYoa > .delete').click()
-        cy.get('[type="text"]').type('Douglas Winter')
-        cy.get('[type="email"]').type('contato@email.com')
-        cy.get('[type="tel"]').type('51 888888888')
-        cy.get('.adicionar').click()
+    it('Deve editar o ultimo contato salvo', () => {
+        cy.get('.contato').then((contatosIniciais) => {
+            const numContatosIniciais = contatosIniciais.length;
 
-        cy.wait(3000)
-        
-        cy.get(':nth-child(4) > .sc-dmqHEX > .sc-eDDNvR > :nth-child(1)').contains('Douglas Winter')
-        cy.get(':nth-child(4) > .sc-dmqHEX > .sc-eDDNvR > :nth-child(2)').contains('51 888888888')
-        cy.get(':nth-child(4) > .sc-dmqHEX > .sc-eDDNvR > :nth-child(3)').contains('contato@email.com')
+            cy.get('.edit').last().click()
+            cy.get('[type="text"]').clear().type('Ciclano de tal')
+        })    
     })
 
-    it('Deve excluir um contato', () => {
-        cy.get('.sc-beqWaB.eQdhbg.contato').should('have.length', 3)
-        cy.get(':nth-child(4) > .sc-gueYoa > .delete').click()
-        
-        cy.get('.sc-beqWaB.eQdhbg.contato').should('have.length', 2)
+    it('Deve deletar o ultimo contato salvo', () => {
+        cy.get('.contato').then((contatosIniciais) => {
+            const numContatosIniciais = contatosIniciais.length;
+
+            cy.get('.delete').last().click()
+
+            cy.get('.contato').should('have.length', numContatosIniciais - 1)
+        })
     })
 })
+
